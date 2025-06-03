@@ -67,7 +67,7 @@ export default function BlogPage({ params }) {
             {blog?.title || "Blog Title"}
           </h4>
           <p className="text-gray-300 mb-2 italic">
-            {blog?.body || "Blog body goes here..."}
+            {blog?.body || blog?.blogbody || "Blog body goes here..."}
           </p>
           <p className="text-gray-400 mb-1">
             By{" "}

@@ -43,7 +43,7 @@ export default function Page() {
     const newBlog = {
       id: `blogtitle_${userSavedBlogs.length + 1}`,
       title: blogTitle,
-      blogbody: blogBody,
+      body: blogBody,
       author: authorName,
       image: blogImage,
       date: new Date().toISOString(),
