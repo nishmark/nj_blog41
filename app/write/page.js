@@ -4,7 +4,7 @@ import PostPreview from "../components/PostPreview";
 import { useState, useEffect } from "react";
 import blogsData from "../../blogdata/blogs.json";
 
-export default function page() {
+export default function Page() {
   const [blogTitle, setBlogTitle] = useState("");
   const [blogBody, setBlogBody] = useState("");
   const [authorName, setAuthorName] = useState("");
