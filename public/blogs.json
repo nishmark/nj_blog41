@@ -1,0 +1,66 @@
+[
+  {
+    "id": "1",
+    "title": "The Joy of Dogs: Why We Love Them",
+    "blogbody": "Exploring the unique bond between humans and dogs, and why dogs are considered man's best friend.",
+    "author": "NISHY",
+    "date": "2024-06-10",
+    "image": "/images/dog1.jpeg"
+  },
+  {
+    "id": "2",
+    "title": "Adventures with My Dog",
+    "blogbody": "A personal story about memorable adventures with a beloved dog.",
+    "author": "HARISH",
+    "date": "2024-06-12",
+    "image": "/images/dog3.jpg"
+  },
+  {
+    "id": "3",
+    "title": "The Evolution of Cars: From Classic to Modern",
+    "blogbody": "A look at how cars have changed over the decades, featuring classic and modern vehicles.",
+    "author": "NISHY",
+    "date": "2024-06-15",
+    "image": "/images/redcar.jpg"
+  },
+  {
+    "id": "4",
+    "title": "Choosing the Right Car for Your Needs",
+    "blogbody": "Tips and advice on selecting the perfect car, whether for family, adventure, or daily commute.",
+    "author": "HARISH",
+    "date": "2024-06-18",
+    "image": "/images/white car.jpg"
+  },
+  {
+    "id": "5",
+    "title": "The Joy of Dogs: Why We Love Them",
+    "blogbody": "Exploring the unique bond between humans and dogs, and why dogs are considered man's best friend.",
+    "author": "NISHY",
+    "date": "2024-06-10",
+    "image": "/images/dog1.jpeg"
+  },
+  {
+    "id": "6",
+    "title": "Adventures with My Dog",
+    "blogbody": "A personal story about memorable adventures with a beloved dog.",
+    "author": "HARISH",
+    "date": "2024-06-12",
+    "image": "/images/dog3.jpg"
+  },
+  {
+    "id": "7",
+    "title": "The Evolution of Cars: From Classic to Modern",
+    "blogbody": "A look at how cars have changed over the decades, featuring classic and modern vehicles.",
+    "author": "NISHY",
+    "date": "2024-06-15",
+    "image": "/images/redcar.jpg"
+  },
+  {
+    "id": "8",
+    "title": "Choosing the Right Car for Your Needs",
+    "blogbody": "Tips and advice on selecting the perfect car, whether for family, adventure, or daily commute.",
+    "author": "HARISH",
+    "date": "2024-06-18",
+    "image": "/images/white car.jpg"
+  }
+]
