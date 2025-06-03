@@ -27,8 +27,22 @@ export default function BlogPage({ params }) {
       if (foundBlog) {
         setBlog(foundBlog);
       }
+      setLoading(false);
+    } else {
+      // Fallback: fetch from blogs.json
+      fetch("/blogs.json")
+        .then((res) => res.json())
+        .then((data) => {
+          // Optionally save to localStorage for next time
+          localStorage.setItem("allBlogs", JSON.stringify(data));
+          const foundBlog = data.find((blog) => blog.id === params.any);
+          if (foundBlog) {
+            setBlog(foundBlog);
+          }
+          setLoading(false);
+        })
+        .catch(() => setLoading(false));
     }
-    setLoading(false);
   }
 
   function handleDelete() {
