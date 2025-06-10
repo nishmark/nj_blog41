@@ -1,76 +1,67 @@
 "use client";
 import { useEffect, useState } from "react";
+import React from "react";
 
 export default function BlogPage({ params }) {
+  const { any } = params;
   const [blog, setBlog] = useState(null);
   const [loading, setLoading] = useState(true);
   const [deleted, setDeleted] = useState(false);
-  const [allBlogs, setAllBlogs] = useState([]);
 
   useEffect(() => {
-    const savedBlogs = localStorage.getItem("allBlogs");
-    if (savedBlogs) {
-      console.log("All saved blogs:", JSON.parse(savedBlogs));
-    }
-    onload();
-  }, []);
-
-  useEffect(() => {
-    console.log("Blog ID from params:", params.any);
-  }, [params]);
-
-  function onload() {
-    const savedBlogs = localStorage.getItem("allBlogs");
-    if (savedBlogs) {
-      const allBlogs = JSON.parse(savedBlogs);
-      const foundBlog = allBlogs.find((blog) => blog.id === params.any);
-      if (foundBlog) {
-        setBlog(foundBlog);
+    async function fetchBlog() {
+      setLoading(true);
+      try {
+        const res = await fetch(`/api/blog/${any}`);
+        if (!res.ok) throw new Error("Blog not found");
+        const data = await res.json();
+        setBlog(data);
+      } catch (err) {
+        setBlog(null);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
-    } else {
-      // Fallback: fetch from blogs.json
-      fetch("/blogs.json")
-        .then((res) => res.json())
-        .then((data) => {
-          // Optionally save to localStorage for next time
-          localStorage.setItem("allBlogs", JSON.stringify(data));
-          const foundBlog = data.find((blog) => blog.id === params.any);
-          if (foundBlog) {
-            setBlog(foundBlog);
-          }
-          setLoading(false);
-        })
-        .catch(() => setLoading(false));
     }
-  }
+    fetchBlog();
+  }, [any]);
 
-  function handleDelete() {
-    // Remove from allBlogs
-    const savedBlogs = localStorage.getItem("allBlogs");
-    if (savedBlogs) {
-      const allBlogs = JSON.parse(savedBlogs);
-      const updatedBlogs = allBlogs.filter((blog) => blog.id !== params.any);
-      localStorage.setItem("allBlogs", JSON.stringify(updatedBlogs));
+  async function handleDelete() {
+    try {
+      const res = await fetch(`/api/blog/${any}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        alert(errorData.error || "Failed to delete blog from server.");
+        return;
+      }
+      // Remove from allBlogs
+      const savedBlogs = localStorage.getItem("allBlogs");
+      if (savedBlogs) {
+        const allBlogs = JSON.parse(savedBlogs);
+        const updatedBlogs = allBlogs.filter((blog) => blog.id !== any);
+        localStorage.setItem("allBlogs", JSON.stringify(updatedBlogs));
+      }
+
+      // Remove from userSavedBlogs
+      const userBlogs = localStorage.getItem("userSavedBlogs");
+      if (userBlogs) {
+        const userSaved = JSON.parse(userBlogs);
+        const updatedUserBlogs = userSaved.filter((blog) => blog.id !== any);
+        localStorage.setItem("userSavedBlogs", JSON.stringify(updatedUserBlogs));
+      }
+
+      setDeleted(true);
+      setBlog(null);
+    } catch (err) {
+      alert("An error occurred while deleting the blog.");
     }
-
-    // Remove from userSavedBlogs
-    const userBlogs = localStorage.getItem("userSavedBlogs");
-    if (userBlogs) {
-      const userSaved = JSON.parse(userBlogs);
-      const updatedUserBlogs = userSaved.filter(
-        (blog) => blog.id !== params.any
-      );
-      localStorage.setItem("userSavedBlogs", JSON.stringify(updatedUserBlogs));
-    }
-
-    setDeleted(true);
-    setBlog(null);
   }
 
   return (
     <div className="bg-gray-900 max-w-2xl mx-auto p-4 shadow-lg flex flex-col items-center">
-      {blog && !deleted ? (
+      {loading && <div className="text-white">Loading...</div>}
+      {blog && !deleted && !loading ? (
         <>
           <img
             src={blog?.imageUrl || blog?.image || "/placeholder-image.jpg"}
@@ -105,6 +96,11 @@ export default function BlogPage({ params }) {
       {deleted && (
         <div className="bg-green-500 text-white px-4 py-2 rounded mb-4">
           Blog deleted successfully!
+        </div>
+      )}
+      {!loading && !blog && !deleted && (
+        <div className="bg-red-500 text-white px-4 py-2 rounded mb-4">
+          Blog not found.
         </div>
       )}
     </div>

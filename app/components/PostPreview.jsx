@@ -6,10 +6,18 @@ import { useRouter } from "next/navigation";
 export default function PostPreview({ blogs }) {
   const router = useRouter();
   //impliment the handleReadMore function
-  function handleReadMore(e, id) {
+  async function handleReadMore(e, id) {
     e.preventDefault();
-    router.push(`/blog/${id}`);
-    console.log("from post preview id is--", id);
+    try {
+      const res = await fetch(`/api/blog/${id}`);
+      if (!res.ok) throw new Error("Blog not found");
+      const blog = await res.json();
+     
+      router.push(`/blog/${id}`);
+    } catch (error) {
+      console.error(error);
+      
+    }
   }
 
   return (
