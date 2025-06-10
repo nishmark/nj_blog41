@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Header from "./components/Header";
 import PostPreview from "./components/PostPreview";
 import Dropdown from "./components/Dropdown";
@@ -11,7 +11,7 @@ export default function Home() {
   const [sortBy, setSortBy] = useState('createdAt');
   const [sortOrder, setSortOrder] = useState('desc');
 
-  const fetchBlogs = async (sortByParam = sortBy, sortOrderParam = sortOrder) => {
+  const fetchBlogs = useCallback(async (sortByParam = sortBy, sortOrderParam = sortOrder) => {
     setLoading(true);
     try {
       const res = await fetch(`/api/blog?sortBy=${sortByParam}&sortOrder=${sortOrderParam}`);
@@ -28,11 +28,11 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [sortBy, sortOrder]);
 
   useEffect(() => {
     fetchBlogs();
-  }, []);
+  }, [fetchBlogs]);
 
   const handleSortChange = (newSortBy, newSortOrder) => {
     setSortBy(newSortBy);
