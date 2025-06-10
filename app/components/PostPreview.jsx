@@ -2,6 +2,7 @@
 import { HeartIcon, BookOpenIcon } from "@heroicons/react/20/solid";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function PostPreview({ blogs }) {
   const router = useRouter();
@@ -33,9 +34,11 @@ export default function PostPreview({ blogs }) {
               className="col-span-1 flex flex-col divide-y divide-gray-200 rounded-lg bg-white text-center shadow-sm"
             >
               <div className="flex flex-1 flex-col p-8">
-                <img
+                <Image
                   alt=""
                   src={blog.image}
+                  width={128}
+                  height={128}
                   className="mx-auto size-32 shrink-0 rounded-full"
                 />
                 <h3 className="mt-6 text-sm font-medium text-gray-900">

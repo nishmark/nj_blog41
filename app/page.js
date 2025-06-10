@@ -1,5 +1,4 @@
-"use client";
-
+'use client';
 import { useEffect, useState, useCallback } from "react";
 import Header from "./components/Header";
 import PostPreview from "./components/PostPreview";
@@ -34,10 +33,10 @@ export default function Home() {
     fetchBlogs();
   }, [fetchBlogs]);
 
-  const handleSortChange = (newSortBy, newSortOrder) => {
+  const handleSortChange = (newSortBy, newSortOrder) => { // i got called from Dropdown.jsx
     setSortBy(newSortBy);
     setSortOrder(newSortOrder);
-    fetchBlogs(newSortBy, newSortOrder);
+    fetchBlogs(newSortBy, newSortOrder); //call the fetchBlogs function with the new sort by and sort order
   };
 
   return (

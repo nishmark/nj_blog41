@@ -1,10 +1,7 @@
-// prettier-ignore
-
 "use client";
 import { PhotoIcon, UserCircleIcon } from "@heroicons/react/24/solid";
-import PostPreview from "../components/PostPreview";
 import { useState, useEffect } from "react";
-import blogsData from "../../blogdata/blogs.json";
+import Image from "next/image";
 
 /*
 
@@ -38,11 +35,12 @@ export default function Page() {
     username: "",
   });
 
+  const [previewImageSrc, setPreviewImageSrc] = useState("https://www.godaddy.com/resources/wp-content/uploads/2023/08/learn-to-blog-featured.jpeg?size=3840x0");
+
   function clickedOnCoverPhoto() {
-    const imageUrlElement = document.getElementById("imageUrl"); //this linewill return the element if it exists, or null if it does not.
+    const imageUrlElement = document.getElementById("imageUrl");
     if (imageUrlElement) {
-      //if the element exists, then we can change the display property to block.
-      imageUrlElement.style.display = "block"; //this line will change the display property to block means it will be visible. to make it invisible we can use display:none
+      imageUrlElement.style.display = "block";
     }
     const submitBtnElement = document.getElementById("submitImageBtn");
     if (submitBtnElement) {
@@ -54,26 +52,43 @@ export default function Page() {
     const imageUrl = document.getElementById("imageUrl").value;
     if (imageUrl) {
       setBlogimageurl(imageUrl);
-      document.getElementById("previewImage").src = imageUrl;
+      setPreviewImageSrc(imageUrl);
       document.getElementById("imageUrl").style.display = "none";
       document.getElementById("submitImageBtn").style.display = "none";
     }
   }
 
-  function blogtitleonChange(e) {
+  function handleBlogTitleChange(e) {
     setBlogtitle(e.target.value);
   }
 
-  function blogbodyonChange(e) {
+  function handleBlogBodyChange(e) {
     setBlogbody(e.target.value);
   }
 
-  function blogauthoronChange(e) {
+  function handleBlogAuthorChange(e) {
     setBlogauthor(e.target.value);
   }
 
   function handleSaveBlog(e) {
     e.preventDefault();
+    
+    // Basic validation
+    if (!blogtitle.trim()) {
+      alert("Please enter a blog title");
+      return;
+    }
+    
+    if (!blogbody.trim()) {
+      alert("Please enter blog content");
+      return;
+    }
+    
+    if (!blogauthor.trim()) {
+      alert("Please enter author name");
+      return;
+    }
+    
     // Set a default image if none is provided
     const imageToUse =
       blogimageurl ||
@@ -135,10 +150,7 @@ export default function Page() {
           });
           
           // Reset the preview image to default
-          const previewImage = document.getElementById("previewImage");
-          if (previewImage) {
-            previewImage.src = "https://www.godaddy.com/resources/wp-content/uploads/2023/08/learn-to-blog-featured.jpeg?size=3840x0";
-          }
+          setPreviewImageSrc("https://www.godaddy.com/resources/wp-content/uploads/2023/08/learn-to-blog-featured.jpeg?size=3840x0");
           
           // Hide success message after 3 seconds
           setTimeout(() => {
@@ -181,12 +193,13 @@ export default function Page() {
 
                 {/* cover photo box */}
                 <div className="flex flex-col items-center">
-                  <img
-                    src="https://www.godaddy.com/resources/wp-content/uploads/2023/08/learn-to-blog-featured.jpeg?size=3840x0"
+                  <Image
+                    src={previewImageSrc}
                     alt="Blog cover"
+                    width={300}
+                    height={300}
                     className="max-h-[300px] object-cover rounded-lg cursor-pointer"
                     onClick={clickedOnCoverPhoto}
-                    id="previewImage"
                   />
                   <input
                     type="text"
@@ -220,7 +233,7 @@ export default function Page() {
                       type="text"
                       className="block min-w-0 grow py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm/6"
                       value={blogtitle}
-                      onChange={blogtitleonChange}
+                      onChange={handleBlogTitleChange}
                     />
                   </div>
                 </div>
@@ -240,7 +253,7 @@ export default function Page() {
                     rows={3}
                     className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                     value={blogbody}
-                    onChange={blogbodyonChange}
+                    onChange={handleBlogBodyChange}
                   />
                 </div>
               </div>
@@ -260,7 +273,7 @@ export default function Page() {
                       type="text"
                       className="block min-w-0 grow py-1.5 pr-3 pl-1 text-base text-gray-900 placeholder:text-gray-400 focus:outline-none sm:text-sm/6"
                       value={blogauthor}
-                      onChange={blogauthoronChange}
+                      onChange={handleBlogAuthorChange}
                     />
                   </div>
                 </div>

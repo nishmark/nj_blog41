@@ -18,12 +18,12 @@ import {
   UserIcon,
 } from '@heroicons/react/20/solid'
 
-export default function Dropdown({ onSortChange }) {
+export default function Dropdown({ onSortChange }) { //
   const [currentSort, setCurrentSort] = useState('Newest');
 
   const handleSort = (sortType, sortBy, sortOrder) => {
     setCurrentSort(sortType);
-    onSortChange(sortBy, sortOrder);
+    onSortChange(sortBy, sortOrder); //call the onSortChange function in the parent component
   };
 
   return (

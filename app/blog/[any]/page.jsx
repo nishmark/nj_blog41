@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import React from "react";
+import Image from "next/image";
 
 export default function BlogPage({ params }) {
   const { any } = params;
@@ -63,9 +64,11 @@ export default function BlogPage({ params }) {
       {loading && <div className="text-white">Loading...</div>}
       {blog && !deleted && !loading ? (
         <>
-          <img
+          <Image
             src={blog?.imageUrl || blog?.image || "/placeholder-image.jpg"}
             alt={blog?.title || "Blog Title"}
+            width={200}
+            height={200}
             className="w-[200px] h-[200px] rounded-lg mx-auto mb-4"
           />
           <h4 className="text-white text-2xl font-bold mb-2">
