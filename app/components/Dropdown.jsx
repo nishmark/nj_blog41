@@ -1,6 +1,6 @@
 "use client";
 import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react'
-import { useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 import {
   ArrowLongRightIcon ,
@@ -18,19 +18,32 @@ import {
   UserIcon,
 } from '@heroicons/react/20/solid'
 
-export default function Dropdown({ onSortChange }) { //
-  const [currentSort, setCurrentSort] = useState('Newest');
+export default function Dropdown({ currentSortBy, currentSortOrder }) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
-  const handleSort = (sortType, sortBy, sortOrder) => {
-    setCurrentSort(sortType);
-    onSortChange(sortBy, sortOrder); //call the onSortChange function in the parent component
+  const getCurrentSortText = () => {
+    if (currentSortBy === 'title' && currentSortOrder === 'asc') return 'A-Z';
+    if (currentSortBy === 'title' && currentSortOrder === 'desc') return 'Z-A';
+    if (currentSortBy === 'author' && currentSortOrder === 'asc') return 'Author A-Z';
+    if (currentSortBy === 'author' && currentSortOrder === 'desc') return 'Author Z-A';
+    if (currentSortBy === 'createdAt' && currentSortOrder === 'desc') return 'Newest';
+    if (currentSortBy === 'createdAt' && currentSortOrder === 'asc') return 'Oldest';
+    return 'Newest';
+  };
+
+  const handleSort = (sortBy, sortOrder) => {
+    const params = new URLSearchParams(searchParams);
+    params.set('sortBy', sortBy);
+    params.set('sortOrder', sortOrder);
+    router.push(`/?${params.toString()}`);
   };
 
   return (
     <Menu as="div" className="relative inline-block text-left">
       <div>
         <MenuButton className="inline-flex w-full justify-center gap-x-1.5 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50">
-          {currentSort}
+          {getCurrentSortText()}
           <ChevronDownIcon aria-hidden="true" className="-mr-1 size-5 text-gray-400" />
         </MenuButton>
       </div>
@@ -42,7 +55,7 @@ export default function Dropdown({ onSortChange }) { //
         <div className="py-1">
           <MenuItem className="group">
             <button
-              onClick={() => handleSort('A-Z', 'title', 'asc')}
+              onClick={() => handleSort('title', 'asc')}
               className="group flex w-full items-center px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-hidden"
             >
               <ArrowLongRightIcon
@@ -57,7 +70,7 @@ export default function Dropdown({ onSortChange }) { //
         <div className="py-1">
           <MenuItem className="group">
             <button
-              onClick={() => handleSort('Z-A', 'title', 'desc')}
+              onClick={() => handleSort('title', 'desc')}
               className="group flex w-full items-center px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-hidden"
             >
               <ArrowLongLeftIcon aria-hidden="true" className="mr-3 size-5 text-gray-400 group-data-focus:text-gray-500" />
@@ -69,7 +82,7 @@ export default function Dropdown({ onSortChange }) { //
         <div className="py-1">
           <MenuItem className="group">
             <button
-              onClick={() => handleSort('Author A-Z', 'author', 'asc')}
+              onClick={() => handleSort('author', 'asc')}
               className="group flex w-full items-center px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-hidden"
             >
               <UserIcon aria-hidden="true" className="mr-3 size-5 text-gray-400 group-data-focus:text-gray-500" />
@@ -80,7 +93,7 @@ export default function Dropdown({ onSortChange }) { //
         <div className="py-1">
           <MenuItem className="group">
             <button
-              onClick={() => handleSort('Author Z-A', 'author', 'desc')}
+              onClick={() => handleSort('author', 'desc')}
               className="group flex w-full items-center px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-hidden"
             >
               <UserIcon aria-hidden="true" className="mr-3 size-5 text-gray-400 group-data-focus:text-gray-500" />
@@ -91,7 +104,7 @@ export default function Dropdown({ onSortChange }) { //
         <div className="py-1">
           <MenuItem className="group">
             <button
-              onClick={() => handleSort('Newest', 'createdAt', 'desc')}
+              onClick={() => handleSort('createdAt', 'desc')}
               className="group flex w-full items-center px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-hidden"
             >
               <ClockIcon aria-hidden="true" className="mr-3 size-5 text-gray-400 group-data-focus:text-gray-500" />
@@ -103,7 +116,7 @@ export default function Dropdown({ onSortChange }) { //
         <div className="py-1">
           <MenuItem className="group">
             <button
-              onClick={() => handleSort('Oldest', 'createdAt', 'asc')}
+              onClick={() => handleSort('createdAt', 'asc')}
               className="group flex w-full items-center px-4 py-2 text-sm text-gray-700 data-focus:bg-gray-100 data-focus:text-gray-900 data-focus:outline-hidden"
             >
               <CalendarIcon aria-hidden="true" className="mr-3 size-5 text-gray-400 group-data-focus:text-gray-500" />

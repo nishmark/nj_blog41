@@ -1,56 +1,44 @@
-'use client';
-import { useEffect, useState, useCallback } from "react";
-import Header from "./components/Header";
+import { PrismaClient } from '@prisma/client';
 import PostPreview from "./components/PostPreview";
 import Dropdown from "./components/Dropdown";
 
-export default function Home() {
-  const [allBlogs, setAllBlogs] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [sortBy, setSortBy] = useState('createdAt');
-  const [sortOrder, setSortOrder] = useState('desc');
+const prisma = new PrismaClient();
 
-  const fetchBlogs = useCallback(async (sortByParam = sortBy, sortOrderParam = sortOrder) => {
-    setLoading(true);
-    try {
-      const res = await fetch(`/api/blog?sortBy=${sortByParam}&sortOrder=${sortOrderParam}`);
-      if (!res.ok) throw new Error("Failed to fetch");
-      const data = await res.json();
-      if (Array.isArray(data) && data.length > 0) {
-        setAllBlogs(data);
-      } else {
-        setAllBlogs([]);
-      }
-    } catch (err) {
-      console.error("Error fetching blogs:", err);
-      setAllBlogs([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [sortBy, sortOrder]);
+async function getSortedBlogs(searchParams) {
+ 
+  const params = await searchParams;   // Now has: { sortBy: 'title', sortOrder: 'asc' }
+  
+ 
+  const sortBy = params?.sortBy || 'createdAt';   // Get sorting parameters from URL
+  const sortOrder = params?.sortOrder || 'desc';
+  
 
-  useEffect(() => {
-    fetchBlogs();
-  }, [fetchBlogs]);
+  const validSortFields = ['title', 'author', 'createdAt', 'date'];    // Validate sortBy to prevent injection attacks
+  const validSortOrders = ['asc', 'desc'];
+  
+  const finalSortBy = validSortFields.includes(sortBy) ? sortBy : 'createdAt';
+  const finalSortOrder = validSortOrders.includes(sortOrder) ? sortOrder : 'desc';
+  
+  // Apply sorting to database query
+  const blogs = await prisma.blog.findMany({
+    orderBy: {
+      [finalSortBy]: finalSortOrder,
+    },
+  });
+  
+  return { blogs, finalSortBy, finalSortOrder };
+}
 
-  const handleSortChange = (newSortBy, newSortOrder) => { // i got called from Dropdown.jsx
-    setSortBy(newSortBy);
-    setSortOrder(newSortOrder);
-    fetchBlogs(newSortBy, newSortOrder); //call the fetchBlogs function with the new sort by and sort order
-  };
 
+export default async function Home({ searchParams }) {
+  const { blogs, finalSortBy, finalSortOrder } = await getSortedBlogs(searchParams); 
+  
   return (
     <div>
       <div className="flex justify-end mt-4 mr-20">
-        <Dropdown onSortChange={handleSortChange} />
+        <Dropdown currentSortBy={finalSortBy} currentSortOrder={finalSortOrder} />
       </div>
-      {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <div className="text-lg text-gray-600">Loading blogs...</div>
-        </div>
-      ) : (
-        <PostPreview blogs={allBlogs} />
-      )}
+      <PostPreview blogs={blogs} />
     </div>
   );
 }

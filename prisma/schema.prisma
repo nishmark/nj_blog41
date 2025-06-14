@@ -14,15 +14,45 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model blog {
-  id String @id @default(uuid())
-  title String
-  body String
-  author String
-  date DateTime    // Use DateTime for dates
-  image String     // This will store the URL or path to the image
-  username String
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  image     String?
+  provider  String   // "google", "github", etc.
+  providerId String  // ID from the provider (Google ID, etc.)
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
   
+  // Relation to blogs
+  blogs     Blog[]
+  
+  @@index([email])
+  @@index([providerId])
+}
 
+model Blog {
+  id        String   @id @default(uuid())
+  title     String
+  body      String
+  image     String?
+  date      DateTime @default(now())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relation to user
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  
+  // Keep existing fields for compatibility
+  username  String   // Original username field
+  
+  // Add user tracking fields
+  userId    String?
+  userEmail String?
+  
+  @@index([authorId])
+  @@index([createdAt])
+  @@index([date])
+  @@index([userEmail])
 }

@@ -31,3 +31,4 @@ export async function DELETE(request, context) { //delete request to the server
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+}

@@ -6,87 +6,64 @@ const prisma = new PrismaClient();
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
-    const sortBy = searchParams.get('sortBy') || 'createdAt'; //sort by createdAt by default
-    const sortOrder = searchParams.get('sortOrder') || 'desc'; //sort in descending order by default
-    
-    // Validate sort parameters
-    const validSortFields = ['title', 'author', 'date', 'createdAt']; //valid sort fields
-    const validSortOrders = ['asc', 'desc']; //valid sort orders
-    
-    if (!validSortFields.includes(sortBy)) { //if the sort field is not valid
-      return NextResponse.json({ error: 'Invalid sort field' }, { status: 400 }); //return an error
-    }
-    
-    if (!validSortOrders.includes(sortOrder)) { //if the sort order is not valid
-      return NextResponse.json({ error: 'Invalid sort order' }, { status: 400 }); //return an error
-    }
+    const sortBy = searchParams.get('sortBy') || 'createdAt';
+    const sortOrder = searchParams.get('sortOrder') || 'desc';
 
-    // Check if DATABASE_URL is configured
-    if (!process.env.DATABASE_URL) { //if the DATABASE_URL is not configured
-      console.error('DATABASE_URL is not configured'); //log an error
-      return NextResponse.json({  //return an error
-        error: 'Database not configured. Please set DATABASE_URL environment variable.'  
-      }, { status: 500 }); 
-    }
-
-    const allBlogs = await prisma.blog.findMany({ //find all the blogs
+    const blogs = await prisma.blog.findMany({
       orderBy: {
         [sortBy]: sortOrder,
       },
     });
     
-    return NextResponse.json(allBlogs); //return the blogs
+    return NextResponse.json(blogs);
   } catch (error) {
-    console.error('Prisma Error:', error); //log an error
-    return NextResponse.json({ 
-      error: error.message,
-      details: 'Database connection failed. Please check your DATABASE_URL configuration.'
-    }, { status: 500 });
+    console.error('Error fetching blogs:', error);
+    return NextResponse.json({ error: 'Failed to fetch blogs' }, { status: 500 });
   }
 }
 
-export async function POST(request) { //post request to the server
+export async function POST(request) {
   try {
-    const data = await request.json(); //get the data from the request
+    const data = await request.json();
     
-    // Input validation
-    if (!data.title || !data.title.trim()) { //if the title is not valid
-      return NextResponse.json({ error: 'Title is required' }, { status: 400 }); //return an error
-    }
-    
-    if (!data.body || !data.body.trim()) { //if the body is not valid
-      return NextResponse.json({ error: 'Body is required' }, { status: 400 }); //return an error
-    }
-    
-    if (!data.author || !data.author.trim()) { //if the author is not valid
-      return NextResponse.json({ error: 'Author is required' }, { status: 400 }); //return an error
-    }
-    
-    // Check if DATABASE_URL is configured
-    if (!process.env.DATABASE_URL) { //if the DATABASE_URL is not configured
-      console.error('DATABASE_URL is not configured'); //log an error
-      return NextResponse.json({  //return an error
-        error: 'Database not configured. Please set DATABASE_URL environment variable.' 
-      }, { status: 500 });
+    if (!data.title?.trim() || !data.body?.trim() || !data.authorId?.trim()) {
+      return NextResponse.json({ error: 'Title, body, and authorId are required' }, { status: 400 });
     }
 
-    const newPost = await prisma.blog.create({ //create a new blog
+    // First, find or create the user using the authorId (which is the email)
+    let user = await prisma.user.findUnique({
+      where: { email: data.authorId }
+    });
+
+    if (!user) {
+      // Create a new user if they don't exist
+      user = await prisma.user.create({
+        data: {
+          email: data.authorId,
+          name: data.author || data.authorId,
+          provider: 'google', // Default provider
+          providerId: data.authorId, // Use email as provider ID for now
+        }
+      });
+    }
+
+    const newPost = await prisma.blog.create({
       data: {
         title: data.title.trim(),
         body: data.body.trim(),
-        author: data.author.trim(),
+        authorId: user.id, // Use the actual user ID from database
         date: new Date(data.date),
         image: data.image,
-        username: data.username || data.author.trim(),
+        username: data.username || data.author || user.name,
+        userId: user.id,
+        userEmail: data.userEmail || data.authorId,
       },
     });
-    return NextResponse.json(newPost, { status: 201 }); //return the new blog
+    
+    return NextResponse.json(newPost, { status: 201 });
   } catch (error) {
-    console.error('Prisma POST Error:', error); //log an error
-    return NextResponse.json({ 
-      error: error.message,
-      details: 'Database connection failed. Please check your DATABASE_URL configuration.'
-    }, { status: 500 }); //return an error      
+    console.error('Error creating blog post:', error);
+    return NextResponse.json({ error: 'Failed to create blog post' }, { status: 500 });
   }
 }
 
