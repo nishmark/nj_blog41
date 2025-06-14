@@ -1,3 +1,6 @@
+import Link from 'next/link'
+import Image from 'next/image'
+
 export default function Login() {
     return (
       <>
@@ -119,7 +122,7 @@ export default function Login() {
                   </div>
   
                   <div className="mt-6 grid grid-cols-2 gap-4">
-                    <a
+                    <Link
                       href="/api/auth/signin"
                       className="flex w-full items-center justify-center gap-3 rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-gray-300 ring-inset hover:bg-gray-50 focus-visible:ring-transparent"
                     >
@@ -142,7 +145,7 @@ export default function Login() {
                         />
                       </svg>
                       <span className="text-sm/6 font-semibold">Google</span>
-                    </a>
+                    </Link>
   
                     <a
                       href="#"
@@ -163,9 +166,10 @@ export default function Login() {
             </div>
           </div>
           <div className="relative hidden w-0 flex-1 lg:block">
-            <img
-              alt=""
+            <Image
+              alt="Blog banner"
               src="https://dogsforbetterlives.org/wp-content/uploads/2023/09/Dog-blog-banner.png"
+              fill
               className="absolute inset-0 size-full object-cover"
             />
           </div>
